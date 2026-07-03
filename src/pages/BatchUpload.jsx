@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import UploadZone from '../components/UploadZone';
 import VehiclePill from '../components/VehiclePill';
-import { simulatePrediction } from '../data/mockData';
+import { predictVehicle } from '../utils/apiClient';
 import { store } from '../data/store';
-import { CONFIDENCE_THRESHOLD } from '../config';
+import { CONFIDENCE_THRESHOLD, USE_MOCK } from '../config';
 import { exportToCSV } from '../utils/exportCsv';
 import { Layers, Download, Filter, AlertCircle, Car, Bike, Truck, Loader2, CheckCircle2 } from 'lucide-react';
 
@@ -29,8 +29,7 @@ export default function BatchUpload() {
 
     for (let i = 0; i < files.length; i++) {
       setCurrentIndex(i + 1);
-      await new Promise((resolve) => setTimeout(resolve, 250));
-      const pred = simulatePrediction(files[i]);
+      const pred = await predictVehicle(files[i]);
       const previewUrl = previews[i]?.url || null;
       processed.push({
         id: Date.now() + i,
@@ -44,8 +43,6 @@ export default function BatchUpload() {
 
     setResults(processed);
     setProcessing(false);
-
-    // Add to dynamic store
     store.addBatchRecords(processed);
   };
 
@@ -90,7 +87,7 @@ export default function BatchUpload() {
       <div>
         <h2 className="text-2xl font-bold text-gray-900">Batch Processing Upload</h2>
         <p className="text-sm text-gray-500 mt-0.5">
-          Upload banyak foto citra sekaligus untuk diklasifikasikan secara berurutan.
+          Upload banyak foto citra sekaligus untuk diklasifikasikan secara berurutan via API.
         </p>
       </div>
 
@@ -123,7 +120,7 @@ export default function BatchUpload() {
               <div className="flex justify-between text-xs font-semibold text-gray-700">
                 <span className="flex items-center gap-1.5">
                   <Loader2 size={14} className="animate-spin text-[#1D9E75]" />
-                  Memproses foto {currentIndex}/{files.length}...
+                  Memproses foto {currentIndex}/{files.length} via {USE_MOCK ? 'Simulasi' : 'Flask API Colab'}...
                 </span>
                 <span>{Math.round((currentIndex / files.length) * 100)}%</span>
               </div>
@@ -232,7 +229,7 @@ export default function BatchUpload() {
         </div>
       </div>
 
-      {/* Bottom Section: Grid 5 Columns with REAL IMAGES */}
+      {/* Bottom Section */}
       {results && (
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
@@ -262,7 +259,6 @@ export default function BatchUpload() {
                     </span>
                   )}
 
-                  {/* REAL Image thumbnail display */}
                   <div className="bg-gray-100 rounded-lg h-32 flex items-center justify-center relative overflow-hidden">
                     {item.imageUrl ? (
                       <img src={item.imageUrl} alt={item.filename} className="w-full h-full object-cover" />

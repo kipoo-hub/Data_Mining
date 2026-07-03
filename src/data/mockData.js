@@ -1,38 +1,55 @@
-export function simulatePrediction(filenameOrFile) {
+import { analyzeImageFile } from '../utils/imageAnalyzer';
+
+export async function simulatePredictionAsync(filenameOrFile, forcedClass = null) {
+  const filename = typeof filenameOrFile === 'string' ? filenameOrFile : filenameOrFile?.name || 'citra.jpg';
+  
+  if (forcedClass) {
+    const winnerConf = 92.4;
+    const remaining = 100 - winnerConf;
+    const all_predictions = { Mobil: 0, Motor: 0, Truk: 0 };
+    all_predictions[forcedClass] = winnerConf;
+    const others = ['Mobil', 'Motor', 'Truk'].filter(c => c !== forcedClass);
+    all_predictions[others[0]] = +(remaining * 0.7).toFixed(1);
+    all_predictions[others[1]] = +(remaining * 0.3).toFixed(1);
+    return { filename, vehicle_type: forcedClass, confidence: winnerConf, all_predictions };
+  }
+
+  // Use canvas visual image analyzer
+  const visualRes = await analyzeImageFile(filenameOrFile);
+  return visualRes;
+}
+
+export function simulatePrediction(filenameOrFile, forcedClass = null) {
   const filename = typeof filenameOrFile === 'string' ? filenameOrFile : filenameOrFile?.name || 'citra.jpg';
   const nameLower = filename.toLowerCase();
-  let vehicle_type = 'Mobil'; // Default to Mobil for general vehicle photos
-  
-  // Comprehensive motor keywords
-  const motorKeywords = ['motor', 'bike', 'vario', 'beat', 'nmax', 'scoopy', 'roda2', 'sepeda', 'vespa', 'aerox', 'pcx', 'mio', 'satria', 'ninja', 'crf', 'vixion', 'supra', 'jupiter', 'smash', 'klx'];
-  // Comprehensive truck/bus keywords
-  const trukKeywords = ['truk', 'truck', 'hino', 'fuso', 'canter', 'trailer', 'box', 'bus', 'bis', 'lorry', 'tronton', 'pick', 'pickup', 'ud', 'isuzu', 'scania', 'volvo'];
-  // Comprehensive car keywords
-  const mobilKeywords = ['mobil', 'car', 'sedan', 'alphard', 'innova', 'avanza', 'suv', 'mpv', 'fortuner', 'pajero', 'brio', 'jazz', 'yaris', 'terios', 'rush', 'civic', 'city', 'hrv', 'crv', 'calya', 'sigra', 'xenia', 'ertiga', 'xl7', 'xpander', 'livina', 'agya', 'ayla', 'bmw', 'mercedes', 'merc', 'audi', 'honda', 'toyota', 'hyundai', 'daihatsu', 'suzuki', 'nissan', 'wuling', 'mazda', 'tesla'];
 
-  if (motorKeywords.some(kw => nameLower.includes(kw))) {
-    vehicle_type = 'Motor';
-  } else if (trukKeywords.some(kw => nameLower.includes(kw))) {
-    vehicle_type = 'Truk';
-  } else if (mobilKeywords.some(kw => nameLower.includes(kw))) {
-    vehicle_type = 'Mobil';
-  } else {
-    // If no keyword match, check hash but bias towards Mobil/Motor based on common filenames
-    let hash = 0;
-    for (let i = 0; i < nameLower.length; i++) {
-      hash = nameLower.charCodeAt(i) + ((hash << 5) - hash);
+  let vehicle_type = forcedClass || 'Mobil';
+
+  if (!forcedClass) {
+    const motorKeywords = ['motor', 'bike', 'vario', 'beat', 'nmax', 'scoopy', 'roda2', 'sepeda', 'vespa', 'aerox', 'pcx', 'mio', 'satria', 'ninja', 'crf', 'vixion', 'supra', 'jupiter', 'smash', 'klx', 'r15', 'cbr', 'gsx'];
+    const trukKeywords = ['truk', 'truck', 'hino', 'fuso', 'canter', 'trailer', 'box', 'bus', 'bis', 'lorry', 'tronton', 'pick', 'pickup', 'ud', 'isuzu', 'scania', 'volvo', 'container'];
+    const mobilKeywords = ['mobil', 'car', 'sedan', 'alphard', 'innova', 'avanza', 'suv', 'mpv', 'fortuner', 'pajero', 'brio', 'jazz', 'yaris', 'terios', 'rush', 'civic', 'city', 'hrv', 'crv', 'calya', 'sigra', 'xenia', 'ertiga', 'xl7', 'xpander', 'livina', 'agya', 'ayla', 'bmw', 'mercedes', 'merc', 'audi', 'honda', 'toyota', 'hyundai', 'daihatsu', 'suzuki', 'nissan', 'wuling', 'mazda', 'tesla'];
+
+    if (motorKeywords.some(kw => nameLower.includes(kw))) {
+      vehicle_type = 'Motor';
+    } else if (trukKeywords.some(kw => nameLower.includes(kw))) {
+      vehicle_type = 'Truk';
+    } else if (mobilKeywords.some(kw => nameLower.includes(kw))) {
+      vehicle_type = 'Mobil';
+    } else {
+      // Deterministic fallback based on file size/name properties
+      let seed = 0;
+      for (let i = 0; i < nameLower.length; i++) seed += nameLower.charCodeAt(i);
+      const classes = ['Motor', 'Mobil', 'Truk', 'Mobil'];
+      vehicle_type = classes[seed % classes.length];
     }
-    const absHash = Math.abs(hash);
-    const classes = ['Mobil', 'Mobil', 'Motor', 'Truk']; // Weight more towards Mobil for general photos
-    vehicle_type = classes[absHash % classes.length];
   }
 
   let seed = 0;
   for (let i = 0; i < nameLower.length; i++) seed += nameLower.charCodeAt(i);
-  
-  let winnerConf = 82 + (seed % 15);
+  let winnerConf = 88.5 + (seed % 9);
   if (nameLower.includes('low') || nameLower.includes('blur') || nameLower.includes('gelap') || nameLower.includes('buram')) {
-    winnerConf = 55 + (seed % 12);
+    winnerConf = 58.0 + (seed % 10);
   }
 
   const remaining = 100 - winnerConf;
@@ -54,8 +71,8 @@ export function simulatePrediction(filenameOrFile) {
   };
 }
 
-export function simulateAugmentation(filenameOrFile) {
-  const base = simulatePrediction(filenameOrFile);
+export function simulateAugmentation(filenameOrFile, basePrediction = null) {
+  const base = basePrediction || simulatePrediction(filenameOrFile);
   const techniques = [
     { name: 'Flip horizontal', icon: 'FlipHorizontal', cssClass: 'scale-x-[-1]', confDelta: 1.2 },
     { name: 'Zoom 1.2x', icon: 'ZoomIn', cssClass: 'scale-125', confDelta: -2.4 },

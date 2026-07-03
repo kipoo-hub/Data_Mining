@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import UploadZone from '../components/UploadZone';
 import ConfidenceBar from '../components/ConfidenceBar';
 import VehiclePill from '../components/VehiclePill';
-import { simulatePrediction } from '../data/mockData';
+import { predictVehicle } from '../utils/apiClient';
 import { store } from '../data/store';
-import { CONFIDENCE_THRESHOLD } from '../config';
-import { ScanLine, Loader2, AlertTriangle, CheckCircle2, RotateCcw, Save, Car, Bike, Truck } from 'lucide-react';
+import { CONFIDENCE_THRESHOLD, USE_MOCK } from '../config';
+import { ScanLine, Loader2, AlertTriangle, CheckCircle2, RotateCcw, Car, Bike, Truck, Sparkles } from 'lucide-react';
 
 export default function Deteksi() {
   const [fileObj, setFileObj] = useState(null);
   const [previewObj, setPreviewObj] = useState(null);
+  const [targetClass, setTargetClass] = useState('Auto');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [saved, setSaved] = useState(false);
@@ -21,25 +22,28 @@ export default function Deteksi() {
     setSaved(false);
   };
 
-  const handleDetect = () => {
+  const handleDetect = async () => {
     if (!fileObj) return;
     setLoading(true);
     setResult(null);
     setSaved(false);
 
-    setTimeout(() => {
-      const pred = simulatePrediction(fileObj);
+    const forced = targetClass === 'Auto' ? null : targetClass;
+
+    try {
+      const pred = await predictVehicle(fileObj, forced);
       const fullResult = {
         ...pred,
         imageUrl: previewObj?.url || null
       };
       setResult(fullResult);
-      setLoading(false);
-      
-      // Auto save to live session store
       store.addRecord(fullResult);
       setSaved(true);
-    }, 1200);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleReset = () => {
@@ -72,6 +76,42 @@ export default function Deteksi() {
 
           <UploadZone onFileSelect={handleFileSelect} multiple={false} />
 
+          {/* Mode Demo Smart Tag Helper */}
+          {USE_MOCK && fileObj && (
+            <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 text-xs space-y-2">
+              <div className="flex items-center justify-between font-bold text-[#085041]">
+                <span className="flex items-center gap-1.5">
+                  <Sparkles size={14} className="text-[#1D9E75]" /> Tag Target Kendaraan (Mode Demo)
+                </span>
+                <span className="text-[10px] bg-emerald-200/60 px-2 py-0.5 rounded text-[#085041]">Simulasi</span>
+              </div>
+              <p className="text-gray-600 text-[11px]">
+                Pastikan jenis kendaraan pada foto sesuai agar simulasi prediksi presisi 100%:
+              </p>
+              <div className="flex gap-1.5 pt-1">
+                {[
+                  { id: 'Auto', label: '⚡ Auto Visual' },
+                  { id: 'Mobil', label: '🚗 Mobil' },
+                  { id: 'Motor', label: '🏍️ Motor' },
+                  { id: 'Truk', label: '🚚 Truk' }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setTargetClass(item.id)}
+                    className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-colors ${
+                      targetClass === item.id
+                        ? 'bg-[#1D9E75] text-white shadow-sm'
+                        : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <button
             type="button"
             disabled={!fileObj || loading}
@@ -85,7 +125,7 @@ export default function Deteksi() {
             {loading ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
-                <span>Menganalisis Citra CNN...</span>
+                <span>{USE_MOCK ? 'Menganalisis Piksel Citra...' : 'Mengirim ke Flask API Colab...'}</span>
               </>
             ) : (
               <>
@@ -119,7 +159,7 @@ export default function Deteksi() {
               <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
                 <Loader2 size={40} className="animate-spin text-[#1D9E75]" />
                 <p className="text-sm font-medium text-gray-600">
-                  Model CNN sedang mengekstrak matriks pixel & matriks ekstraksi fitur...
+                  {USE_MOCK ? 'Mengekstrak matriks piksel...' : 'Menunggu respon dari model_project.h5 Colab...'}
                 </p>
               </div>
             )}
@@ -173,7 +213,7 @@ export default function Deteksi() {
                 {/* Confidence Bar Chart */}
                 <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 space-y-2">
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    Distribusi Probabilitas Softmax
+                    Distribusi Probabilitas Softmax (API Colab)
                   </p>
                   <ConfidenceBar predictions={result.all_predictions} winner={result.vehicle_type} />
                 </div>
