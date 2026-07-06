@@ -29,7 +29,7 @@ function BatchSourceBadge({ source, fallbackReason }) {
     return (
       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FEF3C7] text-[#92400E] text-[10px] font-bold border border-[#FDE68A]" title={fallbackReason || ''}>
         <WifiOff size={10} className="text-[#D97706]" />
-        Lokal
+        Local
       </span>
     );
   }
@@ -42,7 +42,7 @@ export default function BatchUpload() {
   const [processing, setProcessing] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState(null);
-  const [filterClass, setFilterClass] = useState('Semua');
+  const [filterClass, setFilterClass] = useState('All');
   const [errorBanner, setErrorBanner] = useState(null);
 
   const handleFilesSelect = (selectedFiles, filePreviews) => {
@@ -84,8 +84,8 @@ export default function BatchUpload() {
     // Show consolidated error banner if any items fell back
     if (fallbackReasons.length > 0) {
       setErrorBanner({
-        message: `${fallbackReasons.length} dari ${files.length} citra gagal terhubung ke backend CNN dan menggunakan simulasi lokal.`,
-        details: fallbackReasons.length <= 3 ? fallbackReasons.join(' | ') : `${fallbackReasons.slice(0, 3).join(' | ')} dan ${fallbackReasons.length - 3} lainnya.`,
+        message: `${fallbackReasons.length} of ${files.length} images failed to connect to the CNN backend and used local simulation.`,
+        details: fallbackReasons.length <= 3 ? fallbackReasons.join(' | ') : `${fallbackReasons.slice(0, 3).join(' | ')} and ${fallbackReasons.length - 3} more.`,
       });
     }
 
@@ -98,35 +98,35 @@ export default function BatchUpload() {
     if (!results) return;
     const exportData = results.map((item, index) => ({
       No: index + 1,
-      'Nama File': item.filename,
-      Kelas: item.vehicle_type,
+      'File Name': item.filename,
+      Class: item.vehicle_type,
       'Confidence (%)': item.confidence,
-      Sumber: item.source === 'model' ? 'Model CNN' : item.source === 'mock' ? 'Simulasi' : 'Fallback Lokal',
+      Source: item.source === 'model' ? 'CNN Model' : item.source === 'mock' ? 'Simulation' : 'Local Fallback',
     }));
     exportToCSV(exportData, `Batch_Detection_Result_${Date.now()}.csv`);
   };
 
   const filteredResults = results
-    ? results.filter((r) => filterClass === 'Semua' || r.vehicle_type === filterClass)
+    ? results.filter((r) => filterClass === 'All' || r.vehicle_type === filterClass)
     : [];
 
   const totalCount = results ? results.length : 0;
-  const mobilCount = results ? results.filter((r) => r.vehicle_type === 'Mobil').length : 0;
-  const motorCount = results ? results.filter((r) => r.vehicle_type === 'Motor').length : 0;
-  const trukCount = results ? results.filter((r) => r.vehicle_type === 'Truk').length : 0;
+  const carCount = results ? results.filter((r) => r.vehicle_type === 'Car').length : 0;
+  const motorcycleCount = results ? results.filter((r) => r.vehicle_type === 'Motorcycle').length : 0;
+  const truckCount = results ? results.filter((r) => r.vehicle_type === 'Truck').length : 0;
 
   const c = 188.4;
-  const mPct = totalCount ? (mobilCount / totalCount) : 0;
-  const moPct = totalCount ? (motorCount / totalCount) : 0;
-  const tPct = totalCount ? (trukCount / totalCount) : 0;
+  const mPct = totalCount ? (carCount / totalCount) : 0;
+  const moPct = totalCount ? (motorcycleCount / totalCount) : 0;
+  const tPct = totalCount ? (truckCount / totalCount) : 0;
 
   const mDash = mPct * c;
   const moDash = moPct * c;
   const tDash = tPct * c;
 
   const getIcon = (type) => {
-    if (type === 'Motor') return <Bike size={22} className="text-[#854F0B]" />;
-    if (type === 'Truk') return <Truck size={22} className="text-[#993C1D]" />;
+    if (type === 'Motorcycle') return <Bike size={22} className="text-[#854F0B]" />;
+    if (type === 'Truck') return <Truck size={22} className="text-[#993C1D]" />;
     return <Car size={22} className="text-[#185FA5]" />;
   };
 
@@ -137,7 +137,7 @@ export default function BatchUpload() {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Batch Processing Upload</h2>
           <p className="text-sm text-gray-500 mt-0.5">
-            Upload banyak foto citra sekaligus untuk diklasifikasikan secara berurutan via API.
+            Upload multiple images at once to be classified sequentially via API.
           </p>
         </div>
         <ApiUrlSettings />
@@ -159,7 +159,7 @@ export default function BatchUpload() {
             type="button"
             onClick={() => setErrorBanner(null)}
             className="shrink-0 p-1 rounded-lg hover:bg-[#FDE68A] transition-colors"
-            title="Tutup"
+            title="Close"
           >
             <X size={14} />
           </button>
@@ -170,20 +170,20 @@ export default function BatchUpload() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Top Left: Upload Card */}
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4">
-          <h3 className="font-bold text-gray-800 text-lg">Upload Multiple Citra</h3>
+          <h3 className="font-bold text-gray-800 text-lg">Upload Multiple Images</h3>
           
           <UploadZone onFileSelect={handleFilesSelect} multiple={true} />
 
           {files.length > 0 && (
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-2">
-              <p className="font-bold text-gray-700">{files.length} file dipilih untuk diproses:</p>
+              <p className="font-bold text-gray-700">{files.length} files selected for processing:</p>
               <ul className="list-disc list-inside space-y-0.5 text-gray-600">
                 {files.slice(0, 4).map((f, i) => (
                   <li key={i} className="truncate">{f.name}</li>
                 ))}
                 {files.length > 4 && (
                   <li className="font-semibold text-[#1D9E75] list-none pt-1">
-                    +{files.length - 4} file lainnya...
+                    +{files.length - 4} more files...
                   </li>
                 )}
               </ul>
@@ -195,7 +195,7 @@ export default function BatchUpload() {
               <div className="flex justify-between text-xs font-semibold text-gray-700">
                 <span className="flex items-center gap-1.5">
                   <Loader2 size={14} className="animate-spin text-[#1D9E75]" />
-                  Memproses foto {currentIndex}/{files.length} via {USE_MOCK ? 'Simulasi' : 'Flask API Colab'}...
+                  Processing photo {currentIndex}/{files.length} via {USE_MOCK ? 'Simulation' : 'Flask API Colab'}...
                 </span>
                 <span>{Math.round((currentIndex / files.length) * 100)}%</span>
               </div>
@@ -218,7 +218,7 @@ export default function BatchUpload() {
               }`}
             >
               <Layers size={18} />
-              <span>Proses Semua Citra Ini ({files.length})</span>
+              <span>Process All Images ({files.length})</span>
             </button>
           )}
         </div>
@@ -227,7 +227,7 @@ export default function BatchUpload() {
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm min-h-[340px] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-800 text-lg">Ringkasan Batch Real-Time</h3>
+              <h3 className="font-bold text-gray-800 text-lg">Real-Time Batch Summary</h3>
               {results && (
                 <button
                   type="button"
@@ -243,7 +243,7 @@ export default function BatchUpload() {
             {!results ? (
               <div className="flex flex-col items-center justify-center py-12 text-center text-gray-400 space-y-2">
                 <Layers size={40} className="stroke-1" />
-                <p className="text-sm font-medium">Ringkasan akan tampil setelah foto selesai diproses</p>
+                <p className="text-sm font-medium">Summary will appear after photos are processed</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -260,30 +260,30 @@ export default function BatchUpload() {
 
                   <div className="grid grid-cols-2 gap-3 w-full sm:w-auto text-center sm:text-left">
                     <div className="bg-white p-2.5 rounded-lg border border-gray-200">
-                      <p className="text-[10px] uppercase font-bold text-gray-400">Total Citra</p>
+                      <p className="text-[10px] uppercase font-bold text-gray-400">Total Images</p>
                       <p className="text-lg font-black text-gray-800">{totalCount}</p>
                     </div>
                     <div className="bg-[#E6F1FB] p-2.5 rounded-lg border border-[#BEE0F8]">
-                      <p className="text-[10px] uppercase font-bold text-[#185FA5]">Mobil</p>
-                      <p className="text-lg font-black text-[#185FA5]">{mobilCount}</p>
+                      <p className="text-[10px] uppercase font-bold text-[#185FA5]">Car</p>
+                      <p className="text-lg font-black text-[#185FA5]">{carCount}</p>
                     </div>
                     <div className="bg-[#FAEEDA] p-2.5 rounded-lg border border-[#FADBA8]">
-                      <p className="text-[10px] uppercase font-bold text-[#854F0B]">Motor</p>
-                      <p className="text-lg font-black text-[#854F0B]">{motorCount}</p>
+                      <p className="text-[10px] uppercase font-bold text-[#854F0B]">Motorcycle</p>
+                      <p className="text-lg font-black text-[#854F0B]">{motorcycleCount}</p>
                     </div>
                     <div className="bg-[#FAECE7] p-2.5 rounded-lg border border-[#F7C6B8]">
-                      <p className="text-[10px] uppercase font-bold text-[#993C1D]">Truk</p>
-                      <p className="text-lg font-black text-[#993C1D]">{trukCount}</p>
+                      <p className="text-[10px] uppercase font-bold text-[#993C1D]">Truck</p>
+                      <p className="text-lg font-black text-[#993C1D]">{truckCount}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between pt-2">
                   <span className="text-xs font-semibold text-gray-500 flex items-center gap-1">
-                    <Filter size={14} /> Filter Tampilan Kelas:
+                    <Filter size={14} /> Filter Display by Class:
                   </span>
                   <div className="flex gap-1.5">
-                    {['Semua', 'Mobil', 'Motor', 'Truk'].map((cls) => (
+                    {['All', 'Car', 'Motorcycle', 'Truck'].map((cls) => (
                       <button
                         key={cls}
                         onClick={() => setFilterClass(cls)}
@@ -309,10 +309,10 @@ export default function BatchUpload() {
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
-              <CheckCircle2 size={20} className="text-[#1D9E75]" /> Katalog Citra Asli Terproses ({filteredResults.length} foto)
+              <CheckCircle2 size={20} className="text-[#1D9E75]" /> Processed Original Image Catalog ({filteredResults.length} photos)
             </h3>
             <p className="text-xs text-gray-400">
-              * Cell border kuning memiliki confidence &lt; {CONFIDENCE_THRESHOLD}%
+              * Yellow border cells have confidence &lt; {CONFIDENCE_THRESHOLD}%
             </p>
           </div>
 
@@ -330,7 +330,7 @@ export default function BatchUpload() {
                 >
                   {isLowConf && (
                     <span className="absolute top-0 right-0 bg-amber-400 text-amber-950 font-bold text-[9px] px-2 py-0.5 rounded-bl-lg flex items-center gap-0.5 z-10">
-                      <AlertCircle size={10} /> Perlu Verifikasi
+                      <AlertCircle size={10} /> Needs Verification
                     </span>
                   )}
 

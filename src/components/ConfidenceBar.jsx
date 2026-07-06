@@ -4,9 +4,9 @@ export default function ConfidenceBar({ predictions, winner }) {
   if (!predictions) return null;
 
   const classes = [
-    { name: 'Mobil', barColor: 'bg-[#185FA5]', textColor: 'text-[#185FA5]' },
-    { name: 'Motor', barColor: 'bg-[#D97706]', textColor: 'text-[#854F0B]' },
-    { name: 'Truk', barColor: 'bg-[#E05638]', textColor: 'text-[#993C1D]' }
+    { name: 'Car', barColor: 'bg-[#185FA5]', textColor: 'text-[#185FA5]' },
+    { name: 'Motorcycle', barColor: 'bg-[#D97706]', textColor: 'text-[#854F0B]' },
+    { name: 'Truck', barColor: 'bg-[#E05638]', textColor: 'text-[#993C1D]' }
   ];
 
   return (

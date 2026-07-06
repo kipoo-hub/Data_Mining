@@ -88,10 +88,10 @@ export default function UploadZone({ onFileSelect, multiple = false, accept = 'i
           </div>
           <div>
             <p className="text-sm font-semibold text-gray-700">
-              Seret & lepas foto kendaraan atau <span className="text-[#1D9E75] underline">pilih file</span>
+              Drag & drop vehicle photos or <span className="text-[#1D9E75] underline">browse files</span>
             </p>
             <p className="text-xs text-gray-400 mt-0.5">
-              {multiple ? 'Bisa pilih banyak foto sekaligus (JPG, PNG)' : 'Format: JPG, PNG, JPEG'}
+              {multiple ? 'You can select multiple photos at once (JPG, PNG)' : 'Format: JPG, PNG, JPEG'}
             </p>
           </div>
         </div>
@@ -111,7 +111,7 @@ export default function UploadZone({ onFileSelect, multiple = false, accept = 'i
             )}
             <div className="truncate text-left">
               <p className="text-xs font-bold text-gray-800 truncate">
-                {multiple ? `${previews.length} foto dipilih` : previews[0].name}
+                {multiple ? `${previews.length} photos selected` : previews[0].name}
               </p>
               <p className="text-[11px] text-gray-500">
                 {multiple 

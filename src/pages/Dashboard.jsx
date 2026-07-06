@@ -17,16 +17,16 @@ export default function Dashboard() {
     return unsubscribe;
   }, []);
 
-  const { total, mobil, motor, truk } = stats;
+  const { total, car, motorcycle, truck } = stats;
 
-  const mobilPct = total ? (mobil / total) * 100 : 0;
-  const motorPct = total ? (motor / total) * 100 : 0;
-  const trukPct = total ? (truk / total) * 100 : 0;
+  const carPct = total ? (car / total) * 100 : 0;
+  const motorcyclePct = total ? (motorcycle / total) * 100 : 0;
+  const truckPct = total ? (truck / total) * 100 : 0;
 
   const c = 251.2;
-  const mobilDash = (mobilPct / 100) * c;
-  const motorDash = (motorPct / 100) * c;
-  const trukDash = (trukPct / 100) * c;
+  const carDash = (carPct / 100) * c;
+  const motorcycleDash = (motorcyclePct / 100) * c;
+  const truckDash = (truckPct / 100) * c;
 
   const getIcon = (iconName) => {
     if (iconName === 'bike') return <Bike size={18} className="text-[#854F0B]" />;
@@ -39,9 +39,9 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Dashboard Ringkasan</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
           <p className="text-sm text-gray-500 mt-0.5">
-            Ikhtisar performa deteksi berbasis citra yang Anda upload secara real-time.
+            Real-time overview of image-based detection performance from your uploads.
           </p>
         </div>
         {historyList.length > 0 && (
@@ -49,17 +49,17 @@ export default function Dashboard() {
             onClick={() => store.clearAll()}
             className="text-xs text-red-600 hover:text-red-700 font-semibold flex items-center gap-1 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-200 transition-colors"
           >
-            <Trash2 size={14} /> Reset Data Sesi
+            <Trash2 size={14} /> Reset Session Data
           </button>
         )}
       </div>
 
       {/* 4 Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Deteksi Upload" value={total} sub={total ? `↑ ${total} foto terproses` : 'Belum ada upload'} color="green" />
-        <StatCard label="Klasifikasi Mobil" value={mobil} sub={total ? `${mobilPct.toFixed(1)}% dari total` : '0%'} color="blue" />
-        <StatCard label="Klasifikasi Motor" value={motor} sub={total ? `${motorPct.toFixed(1)}% dari total` : '0%'} color="amber" />
-        <StatCard label="Klasifikasi Truk" value={truk} sub={total ? `${trukPct.toFixed(1)}% dari total` : '0%'} color="coral" />
+        <StatCard label="Total Detection Uploads" value={total} sub={total ? `↑ ${total} photos processed` : 'No uploads yet'} color="green" />
+        <StatCard label="Car Classification" value={car} sub={total ? `${carPct.toFixed(1)}% of total` : '0%'} color="blue" />
+        <StatCard label="Motorcycle Classification" value={motorcycle} sub={total ? `${motorcyclePct.toFixed(1)}% of total` : '0%'} color="amber" />
+        <StatCard label="Truck Classification" value={truck} sub={total ? `${truckPct.toFixed(1)}% of total` : '0%'} color="coral" />
       </div>
 
       {/* 2 Large Cards */}
@@ -68,7 +68,7 @@ export default function Dashboard() {
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
-              <Activity size={20} className="text-[#1D9E75]" /> Distribusi Citra Upload
+              <Activity size={20} className="text-[#1D9E75]" /> Upload Image Distribution
             </h3>
             <span className="text-xs font-semibold text-gray-400">Pure Dynamic Data</span>
           </div>
@@ -78,9 +78,9 @@ export default function Dashboard() {
               <div className="p-4 bg-gray-50 rounded-full">
                 <UploadCloud size={36} className="text-gray-300" />
               </div>
-              <p className="text-sm font-medium">Belum ada foto yang di-upload pada sesi ini</p>
+              <p className="text-sm font-medium">No photos have been uploaded in this session</p>
               <Link to="/deteksi" className="text-xs font-bold text-[#1D9E75] hover:underline">
-                Upload foto pertama Anda &rarr;
+                Upload your first photo &rarr;
               </Link>
             </div>
           ) : (
@@ -89,13 +89,13 @@ export default function Dashboard() {
               <div className="relative w-44 h-44 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" r="40" stroke="#f3f4f6" strokeWidth="16" fill="transparent" />
-                  <circle cx="50" cy="50" r="40" stroke="#185FA5" strokeWidth="16" fill="transparent" strokeDasharray={`${mobilDash} ${c - mobilDash}`} strokeDashoffset={0} />
-                  <circle cx="50" cy="50" r="40" stroke="#D97706" strokeWidth="16" fill="transparent" strokeDasharray={`${motorDash} ${c - motorDash}`} strokeDashoffset={-mobilDash} />
-                  <circle cx="50" cy="50" r="40" stroke="#E05638" strokeWidth="16" fill="transparent" strokeDasharray={`${trukDash} ${c - trukDash}`} strokeDashoffset={-(mobilDash + motorDash)} />
+                  <circle cx="50" cy="50" r="40" stroke="#185FA5" strokeWidth="16" fill="transparent" strokeDasharray={`${carDash} ${c - carDash}`} strokeDashoffset={0} />
+                  <circle cx="50" cy="50" r="40" stroke="#D97706" strokeWidth="16" fill="transparent" strokeDasharray={`${motorcycleDash} ${c - motorcycleDash}`} strokeDashoffset={-carDash} />
+                  <circle cx="50" cy="50" r="40" stroke="#E05638" strokeWidth="16" fill="transparent" strokeDasharray={`${truckDash} ${c - truckDash}`} strokeDashoffset={-(carDash + motorcycleDash)} />
                 </svg>
                 <div className="absolute text-center">
                   <span className="text-3xl font-extrabold text-gray-800">{total}</span>
-                  <span className="block text-[11px] font-medium text-gray-400 uppercase tracking-wider">Foto</span>
+                  <span className="block text-[11px] font-medium text-gray-400 uppercase tracking-wider">Photos</span>
                 </div>
               </div>
 
@@ -104,30 +104,30 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between sm:justify-start gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="w-3.5 h-3.5 rounded-full bg-[#185FA5]"></span>
-                    <span className="font-medium text-gray-700">Mobil</span>
+                    <span className="font-medium text-gray-700">Car</span>
                   </div>
-                  <span className="font-bold text-gray-900">{mobil} <span className="text-xs font-normal text-gray-400">({mobilPct.toFixed(0)}%)</span></span>
+                  <span className="font-bold text-gray-900">{car} <span className="text-xs font-normal text-gray-400">({carPct.toFixed(0)}%)</span></span>
                 </div>
                 <div className="flex items-center justify-between sm:justify-start gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="w-3.5 h-3.5 rounded-full bg-[#D97706]"></span>
-                    <span className="font-medium text-gray-700">Motor</span>
+                    <span className="font-medium text-gray-700">Motorcycle</span>
                   </div>
-                  <span className="font-bold text-gray-900">{motor} <span className="text-xs font-normal text-gray-400">({motorPct.toFixed(0)}%)</span></span>
+                  <span className="font-bold text-gray-900">{motorcycle} <span className="text-xs font-normal text-gray-400">({motorcyclePct.toFixed(0)}%)</span></span>
                 </div>
                 <div className="flex items-center justify-between sm:justify-start gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="w-3.5 h-3.5 rounded-full bg-[#E05638]"></span>
-                    <span className="font-medium text-gray-700">Truk</span>
+                    <span className="font-medium text-gray-700">Truck</span>
                   </div>
-                  <span className="font-bold text-gray-900">{truk} <span className="text-xs font-normal text-gray-400">({trukPct.toFixed(0)}%)</span></span>
+                  <span className="font-bold text-gray-900">{truck} <span className="text-xs font-normal text-gray-400">({truckPct.toFixed(0)}%)</span></span>
                 </div>
               </div>
             </div>
           )}
 
           <p className="text-xs text-gray-400 text-center sm:text-left pt-2 border-t border-gray-100">
-            * Statistik dikalkulasi murni dari foto yang telah di-upload pengguna.
+            * Statistics are calculated purely from user-uploaded photos.
           </p>
         </div>
 
@@ -135,13 +135,13 @@ export default function Dashboard() {
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-800 text-lg">Upload Terbaru</h3>
-              <span className="text-xs text-gray-400">{historyList.length} Aktivitas</span>
+              <h3 className="font-bold text-gray-800 text-lg">Recent Uploads</h3>
+              <span className="text-xs text-gray-400">{historyList.length} Activities</span>
             </div>
 
             {historyList.length === 0 ? (
               <div className="py-12 text-center text-gray-400">
-                <p className="text-sm">Riwayat upload masih kosong</p>
+                <p className="text-sm">Upload history is empty</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-100">
@@ -177,7 +177,7 @@ export default function Dashboard() {
               to="/riwayat"
               className="flex items-center justify-center gap-2 text-sm font-semibold text-[#1D9E75] hover:text-[#085041] transition-colors w-full py-1.5"
             >
-              <span>Lihat Semua Riwayat Upload</span>
+              <span>View All Upload History</span>
               <ArrowRight size={16} />
             </Link>
           </div>

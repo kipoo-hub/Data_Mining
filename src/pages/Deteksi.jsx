@@ -13,7 +13,7 @@ function SourceBadge({ source, fallbackReason }) {
     return (
       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E1F5EE] text-[#085041] text-xs font-bold border border-[#A3E3CE]">
         <BrainCircuit size={13} className="text-[#1D9E75]" />
-        Prediksi dari Model CNN
+        Prediction from CNN Model
       </span>
     );
   }
@@ -21,7 +21,7 @@ function SourceBadge({ source, fallbackReason }) {
     return (
       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E6F1FB] text-[#185FA5] text-xs font-bold border border-[#BEE0F8]">
         <FlaskConical size={13} />
-        Mode Simulasi (Demo)
+        Simulation Mode (Demo)
       </span>
     );
   }
@@ -30,11 +30,11 @@ function SourceBadge({ source, fallbackReason }) {
       <div className="space-y-1">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-[#FDE68A]">
           <WifiOff size={13} className="text-[#D97706]" />
-          ⚠ Backend tidak terhubung — hasil simulasi lokal, BUKAN dari model
+          ⚠ Backend not connected — local simulation result, NOT from model
         </span>
         {fallbackReason && (
           <p className="text-[11px] text-gray-400 pl-1 font-mono">
-            Alasan: {fallbackReason}
+            Reason: {fallbackReason}
           </p>
         )}
       </div>
@@ -75,7 +75,7 @@ export default function Deteksi() {
       // Show non-blocking banner if fallback was triggered
       if (pred.source === 'fallback') {
         setErrorBanner({
-          message: `Koneksi API Gagal: ${pred.fallbackReason || 'Unknown error'}. Hasil di bawah adalah simulasi lokal, BUKAN dari model CNN.`,
+          message: `API Connection Failed: ${pred.fallbackReason || 'Unknown error'}. The result below is a local simulation, NOT from the CNN model.`,
         });
       }
 
@@ -102,8 +102,8 @@ export default function Deteksi() {
   };
 
   const getVehicleIcon = (type) => {
-    if (type === 'Motor') return <Bike size={40} className="text-[#854F0B]" />;
-    if (type === 'Truk') return <Truck size={40} className="text-[#993C1D]" />;
+    if (type === 'Motorcycle') return <Bike size={40} className="text-[#854F0B]" />;
+    if (type === 'Truck') return <Truck size={40} className="text-[#993C1D]" />;
     return <Car size={40} className="text-[#185FA5]" />;
   };
 
@@ -112,9 +112,9 @@ export default function Deteksi() {
       {/* Header + Settings */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Deteksi Citra Kendaraan</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Vehicle Image Detection</h2>
           <p className="text-sm text-gray-500 mt-0.5">
-            Klasifikasi foto asli yang di-upload menggunakan model CNN secara real-time.
+            Classify uploaded original photos using the CNN model in real-time.
           </p>
         </div>
         <ApiUrlSettings />
@@ -131,7 +131,7 @@ export default function Deteksi() {
             type="button"
             onClick={() => setErrorBanner(null)}
             className="shrink-0 p-1 rounded-lg hover:bg-[#FDE68A] transition-colors"
-            title="Tutup"
+            title="Close"
           >
             <X size={14} />
           </button>
@@ -141,28 +141,28 @@ export default function Deteksi() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Left Column: Upload */}
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-5">
-          <h3 className="font-bold text-gray-800 text-lg">Upload Foto Asli</h3>
+          <h3 className="font-bold text-gray-800 text-lg">Upload Original Photo</h3>
 
           <UploadZone onFileSelect={handleFileSelect} multiple={false} />
 
-          {/* Mode Demo Smart Tag Helper */}
+          {/* Demo Mode Smart Tag Helper */}
           {USE_MOCK && fileObj && (
             <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 text-xs space-y-2">
               <div className="flex items-center justify-between font-bold text-[#085041]">
                 <span className="flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-[#1D9E75]" /> Tag Target Kendaraan (Mode Demo)
+                  <Sparkles size={14} className="text-[#1D9E75]" /> Target Vehicle Tag (Demo Mode)
                 </span>
-                <span className="text-[10px] bg-emerald-200/60 px-2 py-0.5 rounded text-[#085041]">Simulasi</span>
+                <span className="text-[10px] bg-emerald-200/60 px-2 py-0.5 rounded text-[#085041]">Simulation</span>
               </div>
               <p className="text-gray-600 text-[11px]">
-                Pastikan jenis kendaraan pada foto sesuai agar simulasi prediksi presisi 100%:
+                Make sure the vehicle type in the photo matches for 100% precise simulation prediction:
               </p>
               <div className="flex gap-1.5 pt-1">
                 {[
                   { id: 'Auto', label: '⚡ Auto Visual' },
-                  { id: 'Mobil', label: '🚗 Mobil' },
-                  { id: 'Motor', label: '🏍️ Motor' },
-                  { id: 'Truk', label: '🚚 Truk' }
+                  { id: 'Car', label: '🚗 Car' },
+                  { id: 'Motorcycle', label: '🏍️ Motorcycle' },
+                  { id: 'Truck', label: '🚚 Truck' }
                 ].map((item) => (
                   <button
                     key={item.id}
@@ -194,12 +194,12 @@ export default function Deteksi() {
             {loading ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
-                <span>{USE_MOCK ? 'Menganalisis Piksel Citra...' : 'Mengirim ke Flask API Colab...'}</span>
+                <span>{USE_MOCK ? 'Analyzing Image Pixels...' : 'Sending to Flask API Colab...'}</span>
               </>
             ) : (
               <>
                 <ScanLine size={18} />
-                <span>Deteksi Foto Ini</span>
+                <span>Detect This Photo</span>
               </>
             )}
           </button>
@@ -208,7 +208,7 @@ export default function Deteksi() {
         {/* Right Column: Result */}
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm min-h-[380px] flex flex-col justify-between">
           <div>
-            <h3 className="font-bold text-gray-800 text-lg mb-4">Hasil Analisis CNN</h3>
+            <h3 className="font-bold text-gray-800 text-lg mb-4">CNN Analysis Result</h3>
 
             {!result && !loading && (
               <div className="flex flex-col items-center justify-center py-16 text-center space-y-3">
@@ -216,9 +216,9 @@ export default function Deteksi() {
                   <ScanLine size={48} />
                 </div>
                 <div className="max-w-xs">
-                  <p className="font-semibold text-gray-600 text-base">Upload foto untuk memulai</p>
+                  <p className="font-semibold text-gray-600 text-base">Upload a photo to get started</p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Pilih foto dari komputer Anda lalu klik tombol deteksi.
+                    Select a photo from your computer then click the detect button.
                   </p>
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default function Deteksi() {
               <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
                 <Loader2 size={40} className="animate-spin text-[#1D9E75]" />
                 <p className="text-sm font-medium text-gray-600">
-                  {USE_MOCK ? 'Mengekstrak matriks piksel...' : 'Menunggu respon dari model_project.h5 Colab...'}
+                  {USE_MOCK ? 'Extracting pixel matrix...' : 'Waiting for response from model_project.h5 Colab...'}
                 </p>
               </div>
             )}
@@ -256,7 +256,7 @@ export default function Deteksi() {
                     )}
                     <div>
                       <p className="text-xs font-semibold text-[#085041] uppercase tracking-wider">
-                        Hasil Klasifikasi
+                        Classification Result
                       </p>
                       <h4 className="text-2xl font-black text-[#085041]">
                         {result.vehicle_type}
@@ -270,7 +270,7 @@ export default function Deteksi() {
                     <span className="text-3xl font-extrabold text-[#085041]">
                       {result.confidence}%
                     </span>
-                    <p className="text-[11px] text-[#1D9E75] font-semibold">Tingkat Kepercayaan</p>
+                    <p className="text-[11px] text-[#1D9E75] font-semibold">Confidence Level</p>
                   </div>
                 </div>
 
@@ -279,7 +279,7 @@ export default function Deteksi() {
                   <div className="bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] rounded-xl p-3.5 flex items-center space-x-3 text-xs font-medium shadow-sm">
                     <AlertTriangle size={20} className="shrink-0 text-[#D97706]" />
                     <span>
-                      <strong>Confidence Rendah ({result.confidence}%):</strong> Hasil di bawah threshold {CONFIDENCE_THRESHOLD}%. Disarankan verifikasi manual.
+                      <strong>Low Confidence ({result.confidence}%):</strong> Result is below the {CONFIDENCE_THRESHOLD}% threshold. Manual verification is recommended.
                     </span>
                   </div>
                 )}
@@ -287,7 +287,7 @@ export default function Deteksi() {
                 {/* Confidence Bar Chart */}
                 <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 space-y-2">
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    Distribusi Probabilitas Softmax (API Colab)
+                    Softmax Probability Distribution (API Colab)
                   </p>
                   <ConfidenceBar predictions={result.all_predictions} winner={result.vehicle_type} />
                 </div>
@@ -299,7 +299,7 @@ export default function Deteksi() {
             <div className="pt-6 border-t border-gray-100 flex items-center gap-3 mt-4">
               <div className="flex-1 py-2.5 px-4 rounded-xl font-semibold flex items-center justify-center space-x-2 text-sm bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm">
                 <CheckCircle2 size={16} className="text-emerald-700" />
-                <span>Otomatis Tersimpan ke Riwayat</span>
+                <span>Automatically Saved to History</span>
               </div>
               <button
                 type="button"
@@ -307,7 +307,7 @@ export default function Deteksi() {
                 className="py-2.5 px-4 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 text-sm flex items-center space-x-1.5 transition-colors"
               >
                 <RotateCcw size={16} />
-                <span>Upload Baru</span>
+                <span>New Upload</span>
               </button>
             </div>
           )}

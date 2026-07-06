@@ -29,21 +29,21 @@ export const store = {
   },
   getStats() {
     const total = historyState.length;
-    const mobil = historyState.filter(i => i.vehicle_type === 'Mobil').length;
-    const motor = historyState.filter(i => i.vehicle_type === 'Motor').length;
-    const truk = historyState.filter(i => i.vehicle_type === 'Truk').length;
-    return { total, mobil, motor, truk };
+    const car = historyState.filter(i => i.vehicle_type === 'Car').length;
+    const motorcycle = historyState.filter(i => i.vehicle_type === 'Motorcycle').length;
+    const truck = historyState.filter(i => i.vehicle_type === 'Truck').length;
+    return { total, car, motorcycle, truck };
   },
   addRecord(record) {
     const newEntry = {
       id: Date.now() + Math.random(),
-      filename: record.filename || 'citra_upload.jpg',
+      filename: record.filename || 'image_upload.jpg',
       vehicle_type: record.vehicle_type,
       confidence: record.confidence,
       all_predictions: record.all_predictions,
-      timestamp: 'Baru saja',
+      timestamp: 'Just now',
       imageUrl: record.imageUrl || null,
-      icon: record.vehicle_type === 'Motor' ? 'bike' : record.vehicle_type === 'Truk' ? 'truck' : 'car'
+      icon: record.vehicle_type === 'Motorcycle' ? 'bike' : record.vehicle_type === 'Truck' ? 'truck' : 'car'
     };
     historyState = [newEntry, ...historyState];
     notifyListeners();
@@ -52,13 +52,13 @@ export const store = {
   addBatchRecords(records) {
     const newEntries = records.map((record, index) => ({
       id: Date.now() + index + Math.random(),
-      filename: record.filename || `citra_upload_${index + 1}.jpg`,
+      filename: record.filename || `image_upload_${index + 1}.jpg`,
       vehicle_type: record.vehicle_type,
       confidence: record.confidence,
       all_predictions: record.all_predictions,
-      timestamp: 'Baru saja',
+      timestamp: 'Just now',
       imageUrl: record.imageUrl || null,
-      icon: record.vehicle_type === 'Motor' ? 'bike' : record.vehicle_type === 'Truk' ? 'truck' : 'car'
+      icon: record.vehicle_type === 'Motorcycle' ? 'bike' : record.vehicle_type === 'Truck' ? 'truck' : 'car'
     }));
     historyState = [...newEntries, ...historyState];
     notifyListeners();

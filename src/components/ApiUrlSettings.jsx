@@ -44,7 +44,7 @@ export default function ApiUrlSettings() {
         className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#085041] transition-colors group"
       >
         <Settings size={14} className="group-hover:rotate-90 transition-transform duration-300" />
-        <span>Pengaturan Koneksi Model</span>
+        <span>Model Connection Settings</span>
         {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </button>
 
@@ -53,7 +53,7 @@ export default function ApiUrlSettings() {
         <div className="mt-2 bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-3 animate-in">
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-gray-600" htmlFor="api-url-input">
-              URL Backend Flask (ngrok)
+              Flask Backend URL (ngrok)
             </label>
             <div className="flex gap-2">
               <input
@@ -76,7 +76,7 @@ export default function ApiUrlSettings() {
                 }`}
               >
                 <Check size={14} />
-                Simpan
+                Save
               </button>
             </div>
           </div>
@@ -84,7 +84,7 @@ export default function ApiUrlSettings() {
           {/* Current Active URL */}
           <div className="bg-gray-50 border border-gray-100 rounded-lg p-2.5 space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-              URL Aktif Saat Ini
+              Current Active URL
             </p>
             <p className="text-xs font-mono text-[#085041] break-all flex items-start gap-1">
               <ExternalLink size={12} className="shrink-0 mt-0.5 text-[#1D9E75]" />
@@ -98,7 +98,7 @@ export default function ApiUrlSettings() {
       {toast && (
         <div className="absolute top-0 right-0 bg-[#E1F5EE] border border-[#A3E3CE] text-[#085041] text-xs font-semibold px-3 py-1.5 rounded-lg shadow-md flex items-center gap-1.5 z-50 animate-in">
           <Check size={12} className="text-[#1D9E75]" />
-          URL backend diperbarui
+          Backend URL updated
         </div>
       )}
     </div>

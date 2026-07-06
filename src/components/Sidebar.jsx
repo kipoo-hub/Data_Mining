@@ -6,11 +6,11 @@ import ApiStatus from './ApiStatus';
 export default function Sidebar() {
   const navItems = [
     { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/deteksi', label: 'Deteksi Detil', icon: ScanLine },
+    { path: '/deteksi', label: 'Detailed Detection', icon: ScanLine },
     { path: '/batch', label: 'Batch Upload', icon: LayoutGrid },
-    { path: '/augmentasi', label: 'Komparasi Augmentasi', icon: Wand2 },
-    { path: '/riwayat', label: 'Riwayat Deteksi', icon: History },
-    { path: '/tentang', label: 'Tentang Model', icon: Info },
+    { path: '/augmentasi', label: 'Augmentation Comparison', icon: Wand2 },
+    { path: '/riwayat', label: 'Detection History', icon: History },
+    { path: '/tentang', label: 'About Model', icon: Info },
   ];
 
   return (

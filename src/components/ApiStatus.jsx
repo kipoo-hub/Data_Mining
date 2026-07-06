@@ -15,16 +15,16 @@ export default function ApiStatus() {
         </span>
         {USE_MOCK ? (
           <span className="px-2 py-0.5 rounded-full bg-[#FAEEDA] text-[#854F0B] font-semibold text-[11px] border border-[#FADBA8]">
-            Mode Demo
+            Demo Mode
           </span>
         ) : (
           <span className="px-2 py-0.5 rounded-full bg-[#E1F5EE] text-[#085041] font-semibold text-[11px] border border-[#A3E3CE] flex items-center gap-1">
-            <Wifi size={10} className="animate-pulse" /> API Aktif
+            <Wifi size={10} className="animate-pulse" /> API Active
           </span>
         )}
       </div>
       <p className="text-gray-400 font-mono text-[10px] truncate" title={activeUrl}>
-        {USE_MOCK ? 'Menggunakan data simulasi local' : truncatedUrl}
+        {USE_MOCK ? 'Using local simulation data' : truncatedUrl}
       </p>
     </div>
   );

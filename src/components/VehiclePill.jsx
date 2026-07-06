@@ -5,13 +5,13 @@ export default function VehiclePill({ type, size = 'md' }) {
   let styleClass = 'bg-gray-100 text-gray-700';
   let Icon = Car;
 
-  if (type === 'Mobil') {
+  if (type === 'Car') {
     styleClass = 'bg-[#E6F1FB] text-[#185FA5] border border-[#BEE0F8]';
     Icon = Car;
-  } else if (type === 'Motor') {
+  } else if (type === 'Motorcycle') {
     styleClass = 'bg-[#FAEEDA] text-[#854F0B] border border-[#FADBA8]';
     Icon = Bike;
-  } else if (type === 'Truk') {
+  } else if (type === 'Truck') {
     styleClass = 'bg-[#FAECE7] text-[#993C1D] border border-[#F7C6B8]';
     Icon = Truck;
   }

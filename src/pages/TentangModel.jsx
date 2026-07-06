@@ -3,12 +3,12 @@ import { Layers, Tag, Maximize2, Settings, RefreshCw, FileCode, Server, FlipHori
 
 export default function TentangModel() {
   const specs = [
-    { icon: Layers, label: 'Arsitektur', value: 'Sequential CNN — 3 blok Conv2D + MaxPooling' },
-    { icon: Tag, label: 'Kelas Output', value: 'Mobil · Motor · Truk (3 kelas)' },
-    { icon: Maximize2, label: 'Input Gambar', value: '150 × 150 px, RGB (3 channel)' },
+    { icon: Layers, label: 'Architecture', value: 'Sequential CNN — 3 Conv2D + MaxPooling blocks' },
+    { icon: Tag, label: 'Output Classes', value: 'Car · Motorcycle · Truck (3 classes)' },
+    { icon: Maximize2, label: 'Image Input', value: '150 × 150 px, RGB (3 channels)' },
     { icon: Settings, label: 'Optimizer', value: 'Adam · Loss: Categorical Crossentropy' },
-    { icon: RefreshCw, label: 'Epoch Training', value: '15 epoch' },
-    { icon: FileCode, label: 'Format Model', value: 'model_project.h5 (TensorFlow/Keras)' },
+    { icon: RefreshCw, label: 'Training Epochs', value: '15 epochs' },
+    { icon: FileCode, label: 'Model Format', value: 'model_project.h5 (TensorFlow/Keras)' },
     { icon: Server, label: 'Backend API', value: 'Flask API + ngrok (Google Colab)' },
   ];
 
@@ -26,8 +26,8 @@ export default function TentangModel() {
   ];
 
   const augmentations = [
-    { icon: RotateCw, name: 'Rotasi', param: '±20°' },
-    { icon: FlipHorizontal, name: 'Flip Horizontal', param: 'True' },
+    { icon: RotateCw, name: 'Rotation', param: '±20°' },
+    { icon: FlipHorizontal, name: 'Horizontal Flip', param: 'True' },
     { icon: ZoomIn, name: 'Zoom Range', param: '0.8× – 1.2×' },
     { icon: Sun, name: 'Brightness', param: '±30%' },
     { icon: MoveHorizontal, name: 'Width Shift', param: '0.2' },
@@ -38,9 +38,9 @@ export default function TentangModel() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Tentang Arsitektur Model CNN</h2>
+        <h2 className="text-2xl font-bold text-gray-900">About CNN Model Architecture</h2>
         <p className="text-sm text-gray-500 mt-0.5">
-          Spesifikasi teknis arsitektur jaringan saraf konvolusi dan teknik Smart Augmentation pada VehicleVision.
+          Technical specifications of the convolutional neural network architecture and Smart Augmentation techniques in VehicleVision.
         </p>
       </div>
 
@@ -49,7 +49,7 @@ export default function TentangModel() {
         <div className="space-y-6">
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4">
             <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
-              <Cpu size={20} className="text-[#1D9E75]" /> Spesifikasi Arsitektur CNN
+              <Cpu size={20} className="text-[#1D9E75]" /> CNN Architecture Specifications
             </h3>
 
             <div className="divide-y divide-gray-100">
@@ -69,7 +69,7 @@ export default function TentangModel() {
 
           {/* CNN Visual Layer Diagram */}
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4 overflow-hidden">
-            <h3 className="font-bold text-gray-800 text-lg">Visualisasi Layer Pipeline</h3>
+            <h3 className="font-bold text-gray-800 text-lg">Layer Pipeline Visualization</h3>
             
             <div className="overflow-x-auto pb-2">
               <div className="flex items-center space-x-2 min-w-max">
@@ -93,7 +93,7 @@ export default function TentangModel() {
         <div className="space-y-6">
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-5">
             <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
-              <ShieldCheck size={20} className="text-[#1D9E75]" /> Teknik Augmentasi Data Pintar
+              <ShieldCheck size={20} className="text-[#1D9E75]" /> Smart Data Augmentation Techniques
             </h3>
 
             {/* 2x3 Grid Chips */}
@@ -113,24 +113,24 @@ export default function TentangModel() {
 
             {/* Light Green Card explanation */}
             <div className="bg-[#E1F5EE] border border-[#A3E3CE] rounded-xl p-4 text-xs text-[#085041] leading-relaxed font-medium">
-              Augmentasi diterapkan saat training menggunakan <strong>ImageDataGenerator Keras</strong> untuk meningkatkan variasi data dan ketahanan model terhadap perbedaan kondisi foto kendaraan nyata.
+              Augmentation is applied during training using <strong>Keras ImageDataGenerator</strong> to increase data variation and model robustness against different real-world vehicle photo conditions.
             </div>
 
             {/* Why Augmentation Important */}
             <div className="space-y-2 pt-2">
-              <h4 className="text-sm font-bold text-gray-800">Kenapa augmentasi penting?</h4>
+              <h4 className="text-sm font-bold text-gray-800">Why is augmentation important?</h4>
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2.5 text-xs text-gray-700 font-medium">
                 <div className="flex items-start space-x-2">
                   <span className="w-5 h-5 rounded-full bg-[#1D9E75] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
-                  <p>Meningkatkan jumlah data training secara virtual tanpa pengambilan foto baru.</p>
+                  <p>Virtually increases training data volume without capturing new photos.</p>
                 </div>
                 <div className="flex items-start space-x-2">
                   <span className="w-5 h-5 rounded-full bg-[#1D9E75] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
-                  <p>Mencegah overfitting pada dataset yang terbatas agar generalisasi lebih baik.</p>
+                  <p>Prevents overfitting on limited datasets for better generalization.</p>
                 </div>
                 <div className="flex items-start space-x-2">
                   <span className="w-5 h-5 rounded-full bg-[#1D9E75] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
-                  <p>Membuat model lebih robust terhadap variasi sudut, pencahayaan, dan orientasi kendaraan.</p>
+                  <p>Makes the model more robust against variations in angle, lighting, and vehicle orientation.</p>
                 </div>
               </div>
             </div>

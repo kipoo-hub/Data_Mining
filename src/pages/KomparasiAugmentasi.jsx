@@ -59,8 +59,8 @@ export default function KomparasiAugmentasi() {
     if (!augResults) return;
     const dataToExport = augResults.map((item, index) => ({
       No: index + 1,
-      'Teknik Augmentasi': item.technique,
-      'Kelas Terprediksi': item.vehicle_type,
+      'Augmentation Technique': item.technique,
+      'Predicted Class': item.vehicle_type,
       'Confidence (%)': item.confidence
     }));
     exportToCSV(dataToExport, `Augmentation_Analysis_${Date.now()}.csv`);
@@ -70,9 +70,9 @@ export default function KomparasiAugmentasi() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Komparasi Augmentasi Data Pintar</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Smart Data Augmentation Comparison</h2>
         <p className="text-sm text-gray-500 mt-0.5">
-          Uji ketahanan model CNN terhadap 5 variasi augmentasi menggunakan foto yang Anda upload.
+          Test the CNN model's robustness against 5 augmentation variations using your uploaded photo.
         </p>
       </div>
 
@@ -80,7 +80,7 @@ export default function KomparasiAugmentasi() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Top Left: Upload Card */}
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4">
-          <h3 className="font-bold text-gray-800 text-lg">Upload Foto Sampel Asli</h3>
+          <h3 className="font-bold text-gray-800 text-lg">Upload Original Sample Photo</h3>
 
           <UploadZone onFileSelect={handleFileSelect} multiple={false} />
 
@@ -97,12 +97,12 @@ export default function KomparasiAugmentasi() {
             {loading ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
-                <span>Menerapkan Augmentasi...</span>
+                <span>Applying Augmentations...</span>
               </>
             ) : (
               <>
                 <Wand2 size={18} />
-                <span>Bandingkan Augmentasi Foto Ini</span>
+                <span>Compare Augmentations for This Photo</span>
               </>
             )}
           </button>
@@ -112,7 +112,7 @@ export default function KomparasiAugmentasi() {
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm min-h-[340px] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-800 text-lg">Kesimpulan Analisis Real-Time</h3>
+              <h3 className="font-bold text-gray-800 text-lg">Real-Time Analysis Conclusion</h3>
               {augResults && (
                 <button
                   type="button"
@@ -128,26 +128,26 @@ export default function KomparasiAugmentasi() {
             {!augResults ? (
               <div className="flex flex-col items-center justify-center py-12 text-center text-gray-400 space-y-2">
                 <Wand2 size={40} className="stroke-1" />
-                <p className="text-sm font-medium">Upload foto asli dan klik tombol untuk menganalisis ketahanan model</p>
+                <p className="text-sm font-medium">Upload an original photo and click the button to analyze model robustness</p>
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-gray-50 p-3 rounded-xl border border-gray-200">
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase">Rata-rata Confidence</p>
+                    <p className="text-[11px] font-semibold text-gray-400 uppercase">Average Confidence</p>
                     <p className="text-xl font-extrabold text-gray-800">{avgConf}%</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-xl border border-gray-200">
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase">Konsistensi Prediksi</p>
-                    <p className="text-xl font-extrabold text-[#085041]">{consistentCount}/5 Kelas Sama</p>
+                    <p className="text-[11px] font-semibold text-gray-400 uppercase">Prediction Consistency</p>
+                    <p className="text-xl font-extrabold text-[#085041]">{consistentCount}/5 Same Class</p>
                   </div>
                   <div className="bg-[#E1F5EE] p-3 rounded-xl border border-[#A3E3CE]">
-                    <p className="text-[11px] font-semibold text-[#085041] uppercase">Augmentasi Terbaik</p>
+                    <p className="text-[11px] font-semibold text-[#085041] uppercase">Best Augmentation</p>
                     <p className="text-xs font-bold text-[#085041] truncate">{bestAug?.technique}</p>
                     <p className="text-lg font-black text-[#085041]">{bestAug?.confidence}%</p>
                   </div>
                   <div className="bg-[#FAEEDA] p-3 rounded-xl border border-[#FADBA8]">
-                    <p className="text-[11px] font-semibold text-[#854F0B] uppercase">Augmentasi Terendah</p>
+                    <p className="text-[11px] font-semibold text-[#854F0B] uppercase">Lowest Augmentation</p>
                     <p className="text-xs font-bold text-[#854F0B] truncate">{worstAug?.technique}</p>
                     <p className="text-lg font-black text-[#854F0B]">{worstAug?.confidence}%</p>
                   </div>
@@ -156,12 +156,12 @@ export default function KomparasiAugmentasi() {
                 {isRobust ? (
                   <div className="bg-[#E1F5EE] border border-[#A3E3CE] text-[#085041] rounded-xl p-3.5 flex items-center space-x-3 text-xs font-semibold shadow-sm">
                     <CheckCircle2 size={20} className="shrink-0 text-[#1D9E75]" />
-                    <span><strong>Model Robust:</strong> Seluruh 5 hasil visual augmentasi memprediksi kelas yang konsisten.</span>
+                    <span><strong>Model Robust:</strong> All 5 visual augmentation results predict the same consistent class.</span>
                   </div>
                 ) : (
                   <div className="bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] rounded-xl p-3.5 flex items-center space-x-3 text-xs font-semibold shadow-sm">
                     <AlertTriangle size={20} className="shrink-0 text-[#D97706]" />
-                    <span><strong>Model Sensitif:</strong> Terdapat fluktuasi confidence pada transformasi tertentu.</span>
+                    <span><strong>Model Sensitive:</strong> Confidence fluctuation detected on certain transformations.</span>
                   </div>
                 )}
               </div>
@@ -174,7 +174,7 @@ export default function KomparasiAugmentasi() {
       {augResults && (
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-6">
           <h3 className="font-bold text-gray-800 text-lg">
-            Hasil Transformasi Visual &amp; Klasifikasi CNN Foto Anda
+            Visual Transformation &amp; CNN Classification of Your Photo
           </h3>
 
           <div className="space-y-4">
@@ -207,12 +207,12 @@ function renderAugCell(item, bestAug, worstAug, getAugIcon, imageUrl) {
     >
       {isBest && (
         <span className="absolute top-0 right-0 bg-[#1D9E75] text-white font-bold text-[10px] px-2.5 py-0.5 rounded-bl-lg flex items-center gap-1 z-10">
-          <Award size={12} /> Terbaik
+          <Award size={12} /> Best
         </span>
       )}
       {isWorst && (
         <span className="absolute top-0 right-0 bg-amber-500 text-white font-bold text-[10px] px-2.5 py-0.5 rounded-bl-lg flex items-center gap-1 z-10">
-          <AlertTriangle size={12} /> Terendah
+          <AlertTriangle size={12} /> Lowest
         </span>
       )}
 
@@ -223,7 +223,7 @@ function renderAugCell(item, bestAug, worstAug, getAugIcon, imageUrl) {
         </div>
         <div>
           <h4 className="font-bold text-gray-800 text-sm">{item.technique}</h4>
-          <p className="text-[11px] text-gray-400 font-mono">Transformasi CSS Matrix</p>
+          <p className="text-[11px] text-gray-400 font-mono">CSS Matrix Transform</p>
         </div>
       </div>
 

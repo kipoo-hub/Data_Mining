@@ -8,8 +8,8 @@ import { Search, Filter, Download, Trash2, ChevronLeft, ChevronRight, History, C
 export default function Riwayat() {
   const [historyList, setHistoryList] = useState(store.getHistory());
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterClass, setFilterClass] = useState('Semua');
-  const [filterConf, setFilterConf] = useState('Semua');
+  const [filterClass, setFilterClass] = useState('All');
+  const [filterConf, setFilterConf] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -25,7 +25,7 @@ export default function Riwayat() {
   };
 
   const handleClearAll = () => {
-    if (window.confirm('Apakah Anda yakin ingin mengosongkan seluruh riwayat upload?')) {
+    if (window.confirm('Are you sure you want to clear all upload history?')) {
       store.clearAll();
     }
   };
@@ -33,20 +33,20 @@ export default function Riwayat() {
   const handleExportCSV = () => {
     const dataToExport = filteredData.map((item, index) => ({
       No: index + 1,
-      'Nama File': item.filename,
-      Kelas: item.vehicle_type,
+      'File Name': item.filename,
+      Class: item.vehicle_type,
       'Confidence (%)': item.confidence,
-      Waktu: item.timestamp
+      Time: item.timestamp
     }));
-    exportToCSV(dataToExport, `Riwayat_Deteksi_VehicleVision_${Date.now()}.csv`);
+    exportToCSV(dataToExport, `Detection_History_VehicleVision_${Date.now()}.csv`);
   };
 
   const filteredData = historyList.filter((item) => {
     const matchesSearch = item.filename.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesClass = filterClass === 'Semua' || item.vehicle_type === filterClass;
+    const matchesClass = filterClass === 'All' || item.vehicle_type === filterClass;
     let matchesConf = true;
-    if (filterConf === 'Tinggi') matchesConf = item.confidence >= CONFIDENCE_THRESHOLD;
-    if (filterConf === 'Rendah') matchesConf = item.confidence < CONFIDENCE_THRESHOLD;
+    if (filterConf === 'High') matchesConf = item.confidence >= CONFIDENCE_THRESHOLD;
+    if (filterConf === 'Low') matchesConf = item.confidence < CONFIDENCE_THRESHOLD;
 
     return matchesSearch && matchesClass && matchesConf;
   });
@@ -55,8 +55,8 @@ export default function Riwayat() {
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const getBarColor = (type) => {
-    if (type === 'Mobil') return 'bg-[#185FA5]';
-    if (type === 'Motor') return 'bg-[#D97706]';
+    if (type === 'Car') return 'bg-[#185FA5]';
+    if (type === 'Motorcycle') return 'bg-[#D97706]';
     return 'bg-[#E05638]';
   };
 
@@ -71,9 +71,9 @@ export default function Riwayat() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Riwayat Deteksi Citra Asli</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Original Image Detection History</h2>
           <p className="text-sm text-gray-500 mt-0.5">
-            Daftar riwayat seluruh citra yang pernah Anda upload pada sesi ini.
+            Complete history of all images you have uploaded in this session.
           </p>
         </div>
         {historyList.length > 0 && (
@@ -82,7 +82,7 @@ export default function Riwayat() {
             onClick={handleClearAll}
             className="text-xs text-red-600 hover:text-red-700 font-semibold flex items-center gap-1 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-200 transition-colors"
           >
-            <Trash2 size={14} /> Kosongkan Riwayat
+            <Trash2 size={14} /> Clear History
           </button>
         )}
       </div>
@@ -96,7 +96,7 @@ export default function Riwayat() {
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Cari nama file foto..."
+                placeholder="Search file name..."
                 value={searchTerm}
                 onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                 className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#1D9E75] focus:bg-white transition-colors"
@@ -104,29 +104,29 @@ export default function Riwayat() {
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-semibold text-gray-500 hidden sm:inline">Kelas:</span>
+              <span className="text-xs font-semibold text-gray-500 hidden sm:inline">Class:</span>
               <select
                 value={filterClass}
                 onChange={(e) => { setFilterClass(e.target.value); setCurrentPage(1); }}
                 className="w-full sm:w-auto py-2 px-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:border-[#1D9E75]"
               >
-                <option value="Semua">Semua Kelas</option>
-                <option value="Mobil">Mobil</option>
-                <option value="Motor">Motor</option>
-                <option value="Truk">Truk</option>
+                <option value="All">All Classes</option>
+                <option value="Car">Car</option>
+                <option value="Motorcycle">Motorcycle</option>
+                <option value="Truck">Truck</option>
               </select>
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-semibold text-gray-500 hidden sm:inline">Akurasi:</span>
+              <span className="text-xs font-semibold text-gray-500 hidden sm:inline">Accuracy:</span>
               <select
                 value={filterConf}
                 onChange={(e) => { setFilterConf(e.target.value); setCurrentPage(1); }}
                 className="w-full sm:w-auto py-2 px-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:border-[#1D9E75]"
               >
-                <option value="Semua">Semua Confidence</option>
-                <option value="Tinggi">Tinggi (&ge;70%)</option>
-                <option value="Rendah">Rendah (&lt;70%)</option>
+                <option value="All">All Confidence</option>
+                <option value="High">High (&ge;70%)</option>
+                <option value="Low">Low (&lt;70%)</option>
               </select>
             </div>
           </div>
@@ -148,11 +148,11 @@ export default function Riwayat() {
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
                 <th className="py-3.5 px-4">No</th>
-                <th className="py-3.5 px-4">Foto / Nama File</th>
-                <th className="py-3.5 px-4">Kelas</th>
+                <th className="py-3.5 px-4">Photo / File Name</th>
+                <th className="py-3.5 px-4">Class</th>
                 <th className="py-3.5 px-4">Confidence</th>
-                <th className="py-3.5 px-4">Waktu</th>
-                <th className="py-3.5 px-4 text-center">Aksi</th>
+                <th className="py-3.5 px-4">Time</th>
+                <th className="py-3.5 px-4 text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-sm font-medium">
@@ -160,7 +160,7 @@ export default function Riwayat() {
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-gray-400">
                     <History size={36} className="mx-auto mb-2 stroke-1" />
-                    <p>Belum ada foto yang di-upload pada sesi ini</p>
+                    <p>No photos have been uploaded in this session</p>
                   </td>
                 </tr>
               ) : (
@@ -207,7 +207,7 @@ export default function Riwayat() {
                         <button
                           type="button"
                           onClick={() => handleDelete(item.id)}
-                          title="Hapus riwayat ini"
+                          title="Delete this record"
                           className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
                         >
                           <Trash2 size={16} />
@@ -224,7 +224,7 @@ export default function Riwayat() {
         {/* Pagination Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
           <p className="text-xs text-gray-500">
-            Menampilkan <span className="font-bold">{paginatedData.length}</span> dari <span className="font-bold">{filteredData.length}</span> data upload
+            Showing <span className="font-bold">{paginatedData.length}</span> of <span className="font-bold">{filteredData.length}</span> upload records
           </p>
 
           <div className="flex items-center space-x-2">
@@ -237,7 +237,7 @@ export default function Riwayat() {
               <ChevronLeft size={16} />
             </button>
             <span className="text-xs font-semibold text-gray-700 px-2">
-              Halaman {currentPage} dari {totalPages}
+              Page {currentPage} of {totalPages}
             </span>
             <button
               type="button"
