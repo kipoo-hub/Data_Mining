@@ -1,11 +1,40 @@
 import React, { useState } from 'react';
 import UploadZone from '../components/UploadZone';
 import VehiclePill from '../components/VehiclePill';
+import ApiUrlSettings from '../components/ApiUrlSettings';
 import { predictVehicle } from '../utils/apiClient';
 import { store } from '../data/store';
 import { CONFIDENCE_THRESHOLD, USE_MOCK } from '../config';
 import { exportToCSV } from '../utils/exportCsv';
-import { Layers, Download, Filter, AlertCircle, Car, Bike, Truck, Loader2, CheckCircle2 } from 'lucide-react';
+import { Layers, Download, Filter, AlertCircle, Car, Bike, Truck, Loader2, CheckCircle2, X, BrainCircuit, FlaskConical, WifiOff } from 'lucide-react';
+
+function BatchSourceBadge({ source, fallbackReason }) {
+  if (source === 'model') {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E1F5EE] text-[#085041] text-[10px] font-bold border border-[#A3E3CE]">
+        <BrainCircuit size={10} className="text-[#1D9E75]" />
+        CNN
+      </span>
+    );
+  }
+  if (source === 'mock') {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E6F1FB] text-[#185FA5] text-[10px] font-bold border border-[#BEE0F8]">
+        <FlaskConical size={10} />
+        Demo
+      </span>
+    );
+  }
+  if (source === 'fallback') {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FEF3C7] text-[#92400E] text-[10px] font-bold border border-[#FDE68A]" title={fallbackReason || ''}>
+        <WifiOff size={10} className="text-[#D97706]" />
+        Lokal
+      </span>
+    );
+  }
+  return null;
+}
 
 export default function BatchUpload() {
   const [files, setFiles] = useState([]);
@@ -14,30 +43,49 @@ export default function BatchUpload() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState(null);
   const [filterClass, setFilterClass] = useState('Semua');
+  const [errorBanner, setErrorBanner] = useState(null);
 
   const handleFilesSelect = (selectedFiles, filePreviews) => {
     setFiles(selectedFiles || []);
     setPreviews(filePreviews || []);
     setResults(null);
+    setErrorBanner(null);
   };
 
   const handleProcessBatch = async () => {
     if (!files || files.length === 0) return;
     setProcessing(true);
     setCurrentIndex(0);
+    setErrorBanner(null);
     const processed = [];
+    const fallbackReasons = [];
 
     for (let i = 0; i < files.length; i++) {
       setCurrentIndex(i + 1);
       const pred = await predictVehicle(files[i]);
       const previewUrl = previews[i]?.url || null;
+
+      if (pred.source === 'fallback' && pred.fallbackReason) {
+        fallbackReasons.push(`#${i + 1}: ${pred.fallbackReason}`);
+      }
+
       processed.push({
         id: Date.now() + i,
         filename: files[i].name,
         vehicle_type: pred.vehicle_type,
         confidence: pred.confidence,
         all_predictions: pred.all_predictions,
+        source: pred.source,
+        fallbackReason: pred.fallbackReason || null,
         imageUrl: previewUrl
+      });
+    }
+
+    // Show consolidated error banner if any items fell back
+    if (fallbackReasons.length > 0) {
+      setErrorBanner({
+        message: `${fallbackReasons.length} dari ${files.length} citra gagal terhubung ke backend CNN dan menggunakan simulasi lokal.`,
+        details: fallbackReasons.length <= 3 ? fallbackReasons.join(' | ') : `${fallbackReasons.slice(0, 3).join(' | ')} dan ${fallbackReasons.length - 3} lainnya.`,
       });
     }
 
@@ -52,7 +100,8 @@ export default function BatchUpload() {
       No: index + 1,
       'Nama File': item.filename,
       Kelas: item.vehicle_type,
-      'Confidence (%)': item.confidence
+      'Confidence (%)': item.confidence,
+      Sumber: item.source === 'model' ? 'Model CNN' : item.source === 'mock' ? 'Simulasi' : 'Fallback Lokal',
     }));
     exportToCSV(exportData, `Batch_Detection_Result_${Date.now()}.csv`);
   };
@@ -83,13 +132,39 @@ export default function BatchUpload() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Batch Processing Upload</h2>
-        <p className="text-sm text-gray-500 mt-0.5">
-          Upload banyak foto citra sekaligus untuk diklasifikasikan secara berurutan via API.
-        </p>
+      {/* Header + Settings */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Batch Processing Upload</h2>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Upload banyak foto citra sekaligus untuk diklasifikasikan secara berurutan via API.
+          </p>
+        </div>
+        <ApiUrlSettings />
       </div>
+
+      {/* Error Banner */}
+      {errorBanner && (
+        <div className="bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] rounded-xl p-3.5 flex items-start justify-between gap-3 text-xs font-medium shadow-sm">
+          <div className="flex items-start gap-2.5">
+            <WifiOff size={18} className="shrink-0 text-[#D97706] mt-0.5" />
+            <div className="space-y-0.5">
+              <span>{errorBanner.message}</span>
+              {errorBanner.details && (
+                <p className="text-[11px] text-[#B45309] font-mono">{errorBanner.details}</p>
+              )}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setErrorBanner(null)}
+            className="shrink-0 p-1 rounded-lg hover:bg-[#FDE68A] transition-colors"
+            title="Tutup"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Top Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -276,6 +351,10 @@ export default function BatchUpload() {
                       <span className={`text-xs font-extrabold ${isLowConf ? 'text-amber-700' : 'text-gray-700'}`}>
                         {item.confidence}%
                       </span>
+                    </div>
+                    {/* Source badge per item */}
+                    <div className="mt-1.5">
+                      <BatchSourceBadge source={item.source} fallbackReason={item.fallbackReason} />
                     </div>
                   </div>
                 </div>

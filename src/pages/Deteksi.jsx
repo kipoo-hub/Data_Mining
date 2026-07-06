@@ -2,10 +2,46 @@ import React, { useState } from 'react';
 import UploadZone from '../components/UploadZone';
 import ConfidenceBar from '../components/ConfidenceBar';
 import VehiclePill from '../components/VehiclePill';
+import ApiUrlSettings from '../components/ApiUrlSettings';
 import { predictVehicle } from '../utils/apiClient';
 import { store } from '../data/store';
 import { CONFIDENCE_THRESHOLD, USE_MOCK } from '../config';
-import { ScanLine, Loader2, AlertTriangle, CheckCircle2, RotateCcw, Car, Bike, Truck, Sparkles } from 'lucide-react';
+import { ScanLine, Loader2, AlertTriangle, CheckCircle2, RotateCcw, Car, Bike, Truck, Sparkles, X, BrainCircuit, FlaskConical, WifiOff } from 'lucide-react';
+
+function SourceBadge({ source, fallbackReason }) {
+  if (source === 'model') {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E1F5EE] text-[#085041] text-xs font-bold border border-[#A3E3CE]">
+        <BrainCircuit size={13} className="text-[#1D9E75]" />
+        Prediksi dari Model CNN
+      </span>
+    );
+  }
+  if (source === 'mock') {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E6F1FB] text-[#185FA5] text-xs font-bold border border-[#BEE0F8]">
+        <FlaskConical size={13} />
+        Mode Simulasi (Demo)
+      </span>
+    );
+  }
+  if (source === 'fallback') {
+    return (
+      <div className="space-y-1">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-[#FDE68A]">
+          <WifiOff size={13} className="text-[#D97706]" />
+          ⚠ Backend tidak terhubung — hasil simulasi lokal, BUKAN dari model
+        </span>
+        {fallbackReason && (
+          <p className="text-[11px] text-gray-400 pl-1 font-mono">
+            Alasan: {fallbackReason}
+          </p>
+        )}
+      </div>
+    );
+  }
+  return null;
+}
 
 export default function Deteksi() {
   const [fileObj, setFileObj] = useState(null);
@@ -14,12 +50,14 @@ export default function Deteksi() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [saved, setSaved] = useState(false);
+  const [errorBanner, setErrorBanner] = useState(null);
 
   const handleFileSelect = (selectedFile, preview) => {
     setFileObj(selectedFile);
     setPreviewObj(preview);
     setResult(null);
     setSaved(false);
+    setErrorBanner(null);
   };
 
   const handleDetect = async () => {
@@ -27,11 +65,20 @@ export default function Deteksi() {
     setLoading(true);
     setResult(null);
     setSaved(false);
+    setErrorBanner(null);
 
     const forced = targetClass === 'Auto' ? null : targetClass;
 
     try {
       const pred = await predictVehicle(fileObj, forced);
+
+      // Show non-blocking banner if fallback was triggered
+      if (pred.source === 'fallback') {
+        setErrorBanner({
+          message: `Koneksi API Gagal: ${pred.fallbackReason || 'Unknown error'}. Hasil di bawah adalah simulasi lokal, BUKAN dari model CNN.`,
+        });
+      }
+
       const fullResult = {
         ...pred,
         imageUrl: previewObj?.url || null
@@ -51,6 +98,7 @@ export default function Deteksi() {
     setPreviewObj(null);
     setResult(null);
     setSaved(false);
+    setErrorBanner(null);
   };
 
   const getVehicleIcon = (type) => {
@@ -61,13 +109,34 @@ export default function Deteksi() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Deteksi Citra Kendaraan</h2>
-        <p className="text-sm text-gray-500 mt-0.5">
-          Klasifikasi foto asli yang di-upload menggunakan model CNN secara real-time.
-        </p>
+      {/* Header + Settings */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Deteksi Citra Kendaraan</h2>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Klasifikasi foto asli yang di-upload menggunakan model CNN secara real-time.
+          </p>
+        </div>
+        <ApiUrlSettings />
       </div>
+
+      {/* Error Banner (replaces browser alert) */}
+      {errorBanner && (
+        <div className="bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] rounded-xl p-3.5 flex items-start justify-between gap-3 text-xs font-medium shadow-sm">
+          <div className="flex items-start gap-2.5">
+            <WifiOff size={18} className="shrink-0 text-[#D97706] mt-0.5" />
+            <span>{errorBanner.message}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setErrorBanner(null)}
+            className="shrink-0 p-1 rounded-lg hover:bg-[#FDE68A] transition-colors"
+            title="Tutup"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Left Column: Upload */}
@@ -166,6 +235,11 @@ export default function Deteksi() {
 
             {result && !loading && (
               <div className="space-y-6">
+                {/* Source Badge */}
+                <div>
+                  <SourceBadge source={result.source} fallbackReason={result.fallbackReason} />
+                </div>
+
                 {/* Winner Card with REAL IMAGE PREVIEW */}
                 <div className="bg-[#E1F5EE] border border-[#A3E3CE] rounded-xl p-5 flex items-center justify-between shadow-sm">
                   <div className="flex items-center space-x-4">

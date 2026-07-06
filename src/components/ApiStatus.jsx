@@ -1,9 +1,11 @@
 import React from 'react';
-import { USE_MOCK, API_URL } from '../config';
+import { USE_MOCK } from '../config';
+import { getApiUrl } from '../utils/apiClient';
 import { Wifi, Server } from 'lucide-react';
 
 export default function ApiStatus() {
-  const truncatedUrl = API_URL.length > 22 ? API_URL.substring(0, 22) + '...' : API_URL;
+  const activeUrl = getApiUrl();
+  const truncatedUrl = activeUrl.length > 22 ? activeUrl.substring(0, 22) + '...' : activeUrl;
 
   return (
     <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs space-y-1.5">
@@ -21,7 +23,7 @@ export default function ApiStatus() {
           </span>
         )}
       </div>
-      <p className="text-gray-400 font-mono text-[10px] truncate" title={API_URL}>
+      <p className="text-gray-400 font-mono text-[10px] truncate" title={activeUrl}>
         {USE_MOCK ? 'Menggunakan data simulasi local' : truncatedUrl}
       </p>
     </div>
