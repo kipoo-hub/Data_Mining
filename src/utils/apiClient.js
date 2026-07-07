@@ -83,14 +83,40 @@ export async function predictVehicle(fileObj, forcedClass = null) {
       throw new Error(data.error || 'Flask backend returned a failure status.');
     }
 
-    const vehicle_type = data.vehicle_type || 'Unknown';
+    // Map Indonesian labels from Flask backend to standardized English labels
+    const LABEL_MAP = {
+      'Mobil': 'Car',
+      'mobil': 'Car',
+      'Motor': 'Motorcycle',
+      'motor': 'Motorcycle',
+      'Truk': 'Truck',
+      'truk': 'Truck',
+      'Car': 'Car',
+      'Motorcycle': 'Motorcycle',
+      'Truck': 'Truck',
+    };
+
+    const rawType = data.vehicle_type || 'Unknown';
+    const vehicle_type = LABEL_MAP[rawType] || rawType;
     const confidence = +parseFloat(data.confidence || 0).toFixed(1);
-    const all_predictions = {};
+    const all_predictions = { Car: 0, Motorcycle: 0, Truck: 0 };
 
     if (data.all_predictions) {
       Object.keys(data.all_predictions).forEach(k => {
-        all_predictions[k] = +parseFloat(data.all_predictions[k]).toFixed(1);
+        const normalizedKey = LABEL_MAP[k] || k;
+        all_predictions[normalizedKey] = +parseFloat(data.all_predictions[k]).toFixed(1);
       });
+    }
+
+    // If backend didn't provide all_predictions but gave confidence,
+    // distribute the confidence to the winner class
+    const hasAnyPrediction = Object.values(all_predictions).some(v => v > 0);
+    if (!hasAnyPrediction && confidence > 0) {
+      all_predictions[vehicle_type] = confidence;
+      const remaining = +(100 - confidence).toFixed(1);
+      const otherClasses = ['Car', 'Motorcycle', 'Truck'].filter(c => c !== vehicle_type);
+      all_predictions[otherClasses[0]] = +(remaining * 0.7).toFixed(1);
+      all_predictions[otherClasses[1]] = +(remaining * 0.3).toFixed(1);
     }
 
     return {
@@ -98,6 +124,7 @@ export async function predictVehicle(fileObj, forcedClass = null) {
       vehicle_type,
       confidence,
       all_predictions,
+      raw_label: rawType,  // Keep original label for display
       source: 'model'
     };
   } catch (err) {

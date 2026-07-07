@@ -259,7 +259,7 @@ export default function Deteksi() {
                         Classification Result
                       </p>
                       <h4 className="text-2xl font-black text-[#085041]">
-                        {result.vehicle_type}
+                        {result.raw_label || result.vehicle_type}
                       </h4>
                       <p className="text-[11px] text-gray-500 font-mono truncate max-w-[140px]">
                         {result.filename}
